@@ -32,7 +32,7 @@ Constant(28)
 Visualise the function:
 
 ```py
-f.visualise().write_png('mathgraph_f.png')
+>>> f.visualise().write_png('mathgraph_f.png')
 ```
 
 ![mathgraph_f.png](images/mathgraph_f.png)
