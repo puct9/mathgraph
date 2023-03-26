@@ -62,5 +62,5 @@ Constant(23)
 ## Needs work (but I have no time and am too lazy)
 
 - [ ] Graph simplification (e.g., combining chained powers, etc.)
-- [ ] Non-constant exponents (e.g., `e^x`)
+- [x] Non-constant exponents (e.g., `e^x`)
 - [ ] Print mathematical formula as text
