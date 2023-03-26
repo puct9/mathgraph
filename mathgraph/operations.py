@@ -46,6 +46,10 @@ class Variable:
             else:
                 setattr(self, char, Constant(val))
 
+    @property
+    def value(self) -> float:
+        raise TypeError("Cannot call `value` of non Constant type")
+
     def __add__(self, other) -> "Variable":
         return Add(self, other)
 
@@ -131,9 +135,13 @@ class Variable:
 
 
 class Constant(Variable):
-    def __init__(self, value):
+    def __init__(self, value: float):
         super().__init__()
-        self.value = value
+        self._value = value
+
+    @property
+    def value(self) -> float:
+        return self._value
 
     def __repr__(self) -> str:
         return f"Constant({self.value})"

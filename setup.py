@@ -5,7 +5,7 @@ with open("README.md") as fp:
 
 setuptools.setup(
     name="mathgraph",
-    version="0.0.2",
+    version="0.0.3dev",
     author="Puct9",
     description="Math operation tool",
     long_description=long_description,
