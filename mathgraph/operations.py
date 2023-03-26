@@ -1,4 +1,5 @@
 import functools
+import math
 from typing import List
 
 import pydot
@@ -38,9 +39,7 @@ class Variable:
         self.a: Variable
         self.b: Variable
         if len(args) > 2:
-            raise ValueError(
-                f"Only support {len(Variable.ALPHABET)} arguments"
-            )
+            raise ValueError(f"Only support {len(self.ALPHABET)} arguments")
         for char, val in zip(Variable.ALPHABET, args):
             if isinstance(val, Variable):
                 setattr(self, char, val)
@@ -431,14 +430,11 @@ class Power(Operation):
         return self.a.evaluate(**values) ** self.b.evaluate(**values)
 
     def gradient(self, name):
-        # d/dx(a^b) = b a^(b-1) a'
-        if not isinstance(self.b, Constant):
-            value = self.b.evaluate()
-            if not isinstance(value, Constant):
-                raise ValueError("Does not support non-constant exponent")
-            self.b = value
-        a_pow = self.a ** (self.b - 1)
-        return self.b * a_pow * self.a.gradient(name)
+        # d/dx(a^b) = a^(b-1) (b a' + a log(a) b')
+        return self.a ** (self.b - 1) * (
+            self.b * self.a.gradient(name)
+            + self.a * Log(self.a) * self.b.gradient(name)
+        )
 
 
 class Divide(Operation):
@@ -461,3 +457,24 @@ class Divide(Operation):
         da_b = self.a.gradient(name) * self.b
         a_db = self.a * self.b.gradient(name)
         return (da_b - a_db) / self.b**2
+
+
+class Log(Operation):
+    ALPHABET = "a"
+
+    def __init__(self, a):
+        super().__init__(a)
+
+    def simplified(self) -> "Variable":
+        return Log(self.a.simplified())
+
+    def evaluate(self, **values) -> "Variable":
+        v = self.a.evaluate(**values)
+        if isinstance(v, Constant):
+            return Constant(math.log(v.value))
+        else:
+            return v
+
+    def gradient(self, name) -> "Variable":
+        # d/dx(log(a)) = a' / a
+        return self.a.gradient(name) / self.a
